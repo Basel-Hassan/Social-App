@@ -1,31 +1,61 @@
-import { createContext, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
-import {jwtDecode} from "jwt-decode"
 
-type loginContextType = {
-    userLogin : string | null ,
-    setUserLogin : Dispatch<SetStateAction<string|null>> ,
-    userId : string
-}
+import {
+  createContext,
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 
-export const LoginContext = createContext<loginContextType>({
-    userLogin : null ,
-    setUserLogin : () => {} ,
-    userId : ""
-})
+import { jwtDecode } from "jwt-decode";
 
-export default function LoginContextProvider({children} : {children : ReactNode}) {
-    const [userLogin, setUserLogin] = useState(() => {return localStorage.getItem("userToken")})
+type TokenPayload = {
+  user: string;
+};
 
-    const [userId, setUserId] = useState("")
+type LoginContextType = {
+  userLogin: string | null;
+  setUserLogin: Dispatch<SetStateAction<string | null>>;
+  userId: string;
+};
 
-    useEffect(() => {
-        if (localStorage.getItem("userToken")) {
-            const {user} = jwtDecode(localStorage.getItem("userToken"))
-            setUserId(user)
-            
-        }} , [userLogin])
+export const LoginContext = createContext<LoginContextType>({
+  userLogin: null,
+  setUserLogin: () => {},
+  userId: "",
+});
 
-    return <LoginContext.Provider  value={{userLogin , setUserLogin , userId}}> 
-    {children}
+export default function LoginContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [userLogin, setUserLogin] = useState<string | null>(() => {
+    return localStorage.getItem("userToken");
+  });
+
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    if (!userLogin) {
+      setUserId("");
+      return;
+    }
+
+    try {
+      const { user } = jwtDecode<TokenPayload>(userLogin);
+      setUserId(user);
+    } catch {
+      setUserId("");
+    }
+  }, [userLogin]);
+
+  return (
+    <LoginContext.Provider
+      value={{ userLogin, setUserLogin, userId }}
+    >
+      {children}
     </LoginContext.Provider>
-} 
+  );
+}
