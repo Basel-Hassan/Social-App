@@ -1,0 +1,11 @@
+diff --git a/node_modules/react-hot-toast/src/core/use-toaster.ts b/node_modules/react-hot-toast/src/core/use-toaster.ts
+index c97a0f1..7d5f76f 100644
+--- a/node_modules/react-hot-toast/src/core/use-toaster.ts
++++ b/node_modules/react-hot-toast/src/core/use-toaster.ts
+@@ -1,5 +1,5 @@
+ import { useEffect, useCallback, useRef } from 'react';
+-import { createDispatch, ActionType, useStore, dispatch } from './store';
++import { createDispatch, ActionType, useStore } from './store';
+ import { toast } from './toast';
+ import { DefaultToastOptions, Toast, ToastPosition } from './types';
+ 
