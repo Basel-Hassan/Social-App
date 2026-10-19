@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { FiImage, FiSend, FiX } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
@@ -52,8 +52,8 @@ export default function CommentInput({
       toast.success(res.data.message);
     },
 
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || err.message || "Something went wrong");
     },
   });
 

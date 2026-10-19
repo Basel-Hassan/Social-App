@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRef, useState, type ChangeEvent } from "react";
 import { FiImage, FiSend, FiX } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
@@ -40,8 +40,8 @@ export default function CreatePost() {
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       toast.success(res.data.message);
     },
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || err.message || "Something went wrong");
     },
   });
 
@@ -56,7 +56,7 @@ export default function CreatePost() {
     mutate();
   }
   return (
-    <div className="w-full max-w-xl mb-7 rounded-3xl bg-white p-5 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-6">
+    <div className="w-full max-w-2xl mb-7 rounded-3xl bg-white p-5 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-6">
       {/* Header + text */}
       <div className="flex items-start gap-3">
         <textarea

@@ -7,10 +7,11 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { LoginContext } from "../../Context/LoginContext";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "./../../../node_modules/react-hot-toast/src/index";
 import { useNavigate } from "react-router-dom";
+import EditPostModal from "./EditPostModal";
 
 const itemClass =
   "flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition";
@@ -18,14 +19,21 @@ const itemClass =
 export default function PostMenu({
   userId,
   _id,
+  body ,
+  image ,
+  path
 }: {
   userId: string;
   _id: string;
+  body:string | undefined;
+  image:string | undefined;
+  path:string
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const { userId: myId } = useContext(LoginContext);
-  const query = useQueryClient()
-  const navigate = useNavigate()
+  const query = useQueryClient();
+  const navigate = useNavigate();
 
   function handleDeletPost() {
     return axios.delete(`https://route-posts.routemisr.com/posts/${_id}`, {
@@ -37,13 +45,14 @@ export default function PostMenu({
 
   const { mutate } = useMutation({
     mutationFn: handleDeletPost,
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || err.message || "Something went wrong");
     },
     onSuccess: (res) => {
       toast.success(res.data.message);
-      query.invalidateQueries({queryKey: ["getAllPosts"]})
-      navigate("/")
+      query.invalidateQueries({ queryKey: ["getAllPosts"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      navigate(path);
     },
   });
 
@@ -91,8 +100,8 @@ export default function PostMenu({
             <button
               type="button"
               onClick={() => {
-                mutate()
-                toast.dismiss(t.id)
+                mutate();
+                toast.dismiss(t.id);
               }}
               className="cursor-pointer rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200 transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200"
             >
@@ -104,7 +113,7 @@ export default function PostMenu({
       { duration: Infinity, position: "top-center" },
     );
   }
-  
+
   return (
     <div className="relative outline-none">
       <button
@@ -129,6 +138,10 @@ export default function PostMenu({
               type="button"
               role="menuitem"
               className={`${itemClass} text-slate-700 hover:bg-indigo-50 hover:text-indigo-600`}
+              onClick={() => {
+                setIsEditOpen(true);
+                setIsOpen(false);
+              }}
             >
               <FiEdit2 className="text-base" />
               Edit post
@@ -161,8 +174,8 @@ export default function PostMenu({
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  confirmDeletePost()
-                  setIsOpen(false)
+                  confirmDeletePost();
+                  setIsOpen(false);
                 }}
                 className={`${itemClass} text-red-600 hover:bg-red-50`}
               >
@@ -173,6 +186,8 @@ export default function PostMenu({
           )}
         </div>
       )}
+
+      {isEditOpen && <EditPostModal setIsEditOpen={setIsEditOpen} _id={_id} image={image} body={body}/>}
     </div>
   );
 }
