@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useContext, useRef, useState } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaBookmark, FaHeart } from "react-icons/fa";
 import {
   FiBookmark,
   FiGlobe,
@@ -43,6 +43,7 @@ export default function PostCard({
     _id,
     isShare,
     sharedPost,
+    bookmarked,
   } = data;
   const { name, photo, username, _id: userId } = user;
   const { userId: myId } = useContext(LoginContext);
@@ -52,6 +53,7 @@ export default function PostCard({
   const { id } = useParams();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const textInput = useRef<HTMLTextAreaElement>(null);
+  const isBookmarked = bookmarked;
 
   function getAllComments() {
     return axios.get(
@@ -118,31 +120,60 @@ export default function PostCard({
   });
 
   function shareApi() {
-    return axios.post(`https://route-posts.routemisr.com/posts/${_id}/share` , {
-      "body": textInput?.current?.value || " "
-    } ,{
-      headers:{
-        Authorization: `Bearer ${localStorage.getItem("userToken")}` ,
-
-      }
-    });
+    return axios.post(
+      `https://route-posts.routemisr.com/posts/${_id}/share`,
+      {
+        body: textInput?.current?.value || " ",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
   }
 
-  const {mutate:shareMutate , isPending:shareIsPending } = useMutation({
-    mutationFn:shareApi ,
+  const { mutate: shareMutate, isPending: shareIsPending } = useMutation({
+    mutationFn: shareApi,
     onSuccess: (res) => {
-      toast.success(res.data.message)
-      setIsShareOpen(false)
+      toast.success(res.data.message);
+      setIsShareOpen(false);
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["myProfileApi"] });
-      
-    } ,
+    },
     onError: (err: AxiosError<{ message?: string }>) => {
-      toast.error(err.response?.data?.message || err.message || "Something went wrong")
-      
-    } 
-  })
+      toast.error(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
+    },
+  });
 
+  function doBookmarkApi() {
+    return axios.put(
+      `https://route-posts.routemisr.com/posts/${_id}/bookmark`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+  }
+
+  const { mutate: bookmarkMutate, isPending: bookmarkIsPending } = useMutation({
+    mutationFn: doBookmarkApi,
+    onSuccess: (res) => {
+      query.invalidateQueries({ queryKey: ["getAllPosts"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      query.invalidateQueries({ queryKey: ["getSinglePost", id] });
+      toast.success(res.data.message);
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
+    }
+  });
 
   if (isLoading) {
     return (
@@ -331,8 +362,7 @@ export default function PostCard({
         <button
           type="button"
           onClick={() => {
-            setIsShareOpen(true)
-            
+            setIsShareOpen(true);
           }}
           className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
         >
@@ -342,10 +372,30 @@ export default function PostCard({
 
         <button
           type="button"
-          className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
+          disabled={bookmarkIsPending}
+          onClick={() => bookmarkMutate()}
+          className={`flex flex-1 cursor-pointer disabled:cursor-not-allowed items-center justify-center gap-2 rounded-xl py-2.5 text-sm transition ${
+            isBookmarked
+              ? "bg-indigo-50 font-semibold text-indigo-600 hover:bg-indigo-100"
+              : "font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+          }`}
         >
-          <FiBookmark className="text-lg" />
-          Save
+          {bookmarkIsPending ? (
+            <>
+              <ImSpinner className="animate-spin" />
+              Loading...
+            </>
+          ) : isBookmarked ? (
+            <>
+              <FaBookmark className="scale-110 fill-current text-lg" />
+              Saved
+            </>
+          ) : (
+            <>
+              <FiBookmark className="text-lg" />
+              Save
+            </>
+          )}
         </button>
       </div>
 
@@ -357,9 +407,9 @@ export default function PostCard({
 
       {isPostDetails
         ? Data?.data.data.comments?.map((comment: CommentType) => (
-            <TopComment key={comment._id} topComment={comment} />
+            <TopComment key={comment._id} topComment={comment} isPostDetails={isPostDetails} postId={_id}/>
           ))
-        : topComment && <TopComment topComment={topComment} />}
+        : topComment && <TopComment topComment={topComment} isPostDetails={isPostDetails} postId={_id}/>}
 
       {isLikeOpen && (
         <LikesModal
@@ -453,12 +503,17 @@ export default function PostCard({
                 type="button"
                 disabled={shareIsPending}
                 onClick={() => {
-                  shareMutate()
+                  shareMutate();
                 }}
                 className="rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-600 active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-700 flex items-center justify-center gap-1.5"
               >
-                {shareIsPending ? <><ImSpinner className="animate-spin" /> Loading...</>:"Share"}
-                
+                {shareIsPending ? (
+                  <>
+                    <ImSpinner className="animate-spin" /> Loading...
+                  </>
+                ) : (
+                  "Share"
+                )}
               </button>
             </div>
           </div>

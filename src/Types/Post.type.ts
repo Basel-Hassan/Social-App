@@ -49,4 +49,5 @@ export interface PostComment {
   parentComment: string | null;
   likes: string[];
   createdAt: string;
+  repliesCount:number
 }

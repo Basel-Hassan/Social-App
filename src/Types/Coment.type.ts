@@ -14,4 +14,5 @@ export interface CommentType {
   parentComment: string | null; 
   likes: string[]; 
   createdAt: string; 
+  repliesCount : number;
 }
