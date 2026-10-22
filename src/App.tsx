@@ -1,51 +1,126 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import './App.css'
-import Layout from './Layout/Layout'
-import Home from './Pages/Home/Home'
-import NotFound from './Pages/NotFound/NotFound'
-import Profile from './Pages/Profile/Profile'
-import Register from './Pages/Register/Register'
-import Login from './Pages/Login/Login'
-import LoginContextProvider from './Context/LoginContext'
-import ProtectedRout from './Components/ProtectedRout/ProtectedRout'
-import AuthProtectedRout from './Components/ProtectedRout/AuthProtectedRout'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import SinglePost from './Pages/SinglePost/SinglePost'
-import { Toaster } from './../node_modules/react-hot-toast/src/components/toaster';
-import useNetworkState from './../node_modules/react-use/esm/useNetworkState';
-import Offline from './Components/Offline/Offline'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import Layout from "./Layout/Layout";
+import Home from "./Pages/Home/Home";
+import NotFound from "./Pages/NotFound/NotFound";
+import Profile from "./Pages/Profile/Profile";
+import Register from "./Pages/Register/Register";
+import Login from "./Pages/Login/Login";
+import LoginContextProvider from "./Context/LoginContext";
+import ProtectedRout from "./Components/ProtectedRout/ProtectedRout";
+import AuthProtectedRout from "./Components/ProtectedRout/AuthProtectedRout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import SinglePost from "./Pages/SinglePost/SinglePost";
+import { Toaster } from "./../node_modules/react-hot-toast/src/components/toaster";
+import useNetworkState from "./../node_modules/react-use/esm/useNetworkState";
+import Offline from "./Components/Offline/Offline";
+import { useEffect } from "react";
+import Settings from "./Pages/Settings/Settings";
+import ProfileContextProvider from "./Context/ProfileContext";
 
-const query = new QueryClient()
+const query = new QueryClient();
 
 function App() {
+  const isTokenExpired = () => {
+    const loginTime = localStorage.getItem("loginTime");
+    const token = localStorage.getItem("userToken");
 
-  const {online} = useNetworkState()
+    if (!token || !loginTime) {
+      return true;
+    }
 
-  const router  = createBrowserRouter([
-    {path: "", element: <Layout/> , children: [
-      {index : true , element: <ProtectedRout> <Home/> </ProtectedRout>} ,
-      {path : "profile" , element:<ProtectedRout> <Profile/> </ProtectedRout> } ,
-      {path : "postdetails/:id" , element:<ProtectedRout> <SinglePost/> </ProtectedRout> } ,
-      {path : "register" , element: <AuthProtectedRout> <Register/> </AuthProtectedRout> } ,
-      {path : "login" , element: <AuthProtectedRout> <Login/> </AuthProtectedRout>} ,
-      {path : "*" , element: <NotFound/>} ,
-    ] },
-  ])
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+    const timePassed = Date.now() - Number(loginTime);
 
-  
+    return timePassed >= sevenDaysInMs;
+  };
+
+  useEffect(() => {
+    if (isTokenExpired()) {
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("loginTime");
+    }
+  }, []);
+
+  const { online } = useNetworkState();
+
+  const router = createBrowserRouter([
+    {
+      path: "",
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: (
+            <ProtectedRout>
+              {" "}
+              <Home />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "profile",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <Profile />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "settings",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <Settings />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "postdetails/:id",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <SinglePost />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "register",
+          element: (
+            <AuthProtectedRout>
+              {" "}
+              <Register />{" "}
+            </AuthProtectedRout>
+          ),
+        },
+        {
+          path: "login",
+          element: (
+            <AuthProtectedRout>
+              {" "}
+              <Login />{" "}
+            </AuthProtectedRout>
+          ),
+        },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
+  ]);
+
   return (
     <>
-    {!online && <Offline onRetry={() => query.refetchQueries()} />}
-    <QueryClientProvider client={query}>
-    <LoginContextProvider>
-      <Toaster/>
-    <RouterProvider router={router}>
-    </RouterProvider>
-    </LoginContextProvider>
-    </QueryClientProvider>
+      {!online && <Offline onRetry={() => query.refetchQueries()} />}
+      <QueryClientProvider client={query}>
+        <LoginContextProvider>
+          <ProfileContextProvider>
+          <Toaster />
+          <RouterProvider router={router}></RouterProvider>
+          </ProfileContextProvider>
+        </LoginContextProvider>
+      </QueryClientProvider>
     </>
-  )
+  );
 }
 
-export default App
-
+export default App;

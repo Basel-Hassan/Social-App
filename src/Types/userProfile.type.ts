@@ -7,7 +7,7 @@ export interface UserType {
   dateOfBirth: string;
   gender: "male" | "female";
   photo: string;
-  cover: string;
+  cover?: string;
   bookmarks: string[];
   followers: string[];
   following: string[];

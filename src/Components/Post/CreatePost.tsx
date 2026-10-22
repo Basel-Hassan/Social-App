@@ -38,6 +38,7 @@ export default function CreatePost() {
       clearForm();
       setIsUploaded("");
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
       toast.success(res.data.message);
     },
     onError: (err: AxiosError<{ message?: string }>) => {

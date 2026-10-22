@@ -53,7 +53,7 @@ export default function EditPostModal({
     onSuccess: (res) => {
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["getSinglePost", id] });
-      query.invalidateQueries({ queryKey: ["myProfileApi"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
       toast.success(res.data.message);
       setIsEditOpen(false);
     },

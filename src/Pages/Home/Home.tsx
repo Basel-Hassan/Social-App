@@ -36,7 +36,14 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
         <div className="mx-auto w-full max-w-2xl">
-          <ErrorState message={error.message} refetch={refetch} />
+          <ErrorState
+            message={
+              axios.isAxiosError<{ message?: string }>(error)
+                ? error.response?.data?.message
+                : error.message
+            }
+            refetch={refetch}
+          />
         </div>
       </div>
     );

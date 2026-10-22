@@ -50,6 +50,9 @@ export default function CommentInput({
       reset();
       setIsUploaded("");
       toast.success(res.data.message);
+      query.invalidateQueries({queryKey:["userPostsApi"]})
+      query.invalidateQueries({queryKey:["getAllPosts"]})
+      query.invalidateQueries({ queryKey: ["getAllComments", postId] });
     },
 
     onError: (err: AxiosError<{ message?: string }>) => {

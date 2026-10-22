@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { useContext, useRef } from "react";
 import {
   FiAlertCircle,
   FiBookmark,
@@ -10,40 +11,28 @@ import {
   FiUserPlus,
   FiUsers,
 } from "react-icons/fi";
-import PostCard from "../../Components/Post/PostCard";
-import { PostType } from "../../Types/Post.type";
-import { UserType } from "../../Types/userProfile.type";
 import CreatePost from "../../Components/Post/CreatePost";
-import { useRef } from "react";
+import PostCard from "../../Components/Post/PostCard";
+import { ProfileContext } from "../../Context/ProfileContext";
+import { PostType } from "../../Types/Post.type";
 import toast from "./../../../node_modules/react-hot-toast/src/index";
 
 export default function Profile() {
   const Query = useQueryClient();
   const photoInput = useRef<HTMLInputElement>(null);
   const formData = new FormData();
-  function myProfileApi() {
-    return axios.get(
-      `https://route-posts.routemisr.com/users/profile-data`,
 
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      },
-    );
+  const context = useContext(ProfileContext);
+
+  if (!context) {
+    throw new Error("Profile must be used inside ProfileContextProvider");
   }
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["myProfileApi"],
-    queryFn: myProfileApi,
-  });
-
-  const user: UserType = data?.data.data.user;
+  const { user, isLoading, isError, error } = context;
 
   function userPostsApi() {
     return axios.get(
-      `https://route-posts.routemisr.com/users/${user._id}/posts`,
-
+      `https://route-posts.routemisr.com/users/${user?._id}/posts`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
@@ -60,7 +49,7 @@ export default function Profile() {
   } = useQuery({
     queryKey: ["userPostsApi"],
     queryFn: userPostsApi,
-    enabled: !isLoading && !isError && !!data,
+    enabled: !!user?._id,
   });
 
   const posts = userPostsData?.data.data.posts;
@@ -95,7 +84,9 @@ export default function Profile() {
     const toastId = toast.loading("Uploading profile photo...");
     mutate(formData, {
       onSuccess: (res) => {
-        toast.success(res.data.message ?? "Photo uploaded successfully", { id: toastId });
+        toast.success(res.data.message ?? "Photo uploaded successfully", {
+          id: toastId,
+        });
         Query.invalidateQueries({ queryKey: ["myProfileApi"] });
         Query.invalidateQueries({ queryKey: ["userPostsApi"] });
       },
@@ -200,7 +191,7 @@ export default function Profile() {
     );
   }
 
-  if (isError || userPostsIsError) {
+  if (isError || userPostsIsError || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
         <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-10">
@@ -216,7 +207,13 @@ export default function Profile() {
 
           {/* Message */}
           <p className="mt-2 text-sm leading-relaxed text-slate-500">
-            {error?.message || userPostsError?.message}
+            {(axios.isAxiosError(error)
+              ? error.response?.data?.message || error.message
+              : String(error ?? "")) ||
+              (axios.isAxiosError(userPostsError)
+                ? userPostsError.response?.data?.message ||
+                  userPostsError.message
+                : String(userPostsError ?? ""))}
           </p>
 
           {/* Retry button */}
@@ -241,6 +238,18 @@ export default function Profile() {
     );
   }
 
+  const {
+    cover,
+    photo,
+    name,
+    username,
+    createdAt,
+    dateOfBirth,
+    followersCount,
+    followingCount,
+    bookmarksCount,
+  } = user;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
       <div className="mx-auto w-full max-w-2xl">
@@ -248,9 +257,9 @@ export default function Profile() {
         <div className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 mb-7">
           {/* Cover */}
           <div className="relative h-36 bg-gradient-to-r from-indigo-400 via-sky-400 to-indigo-300 sm:h-44">
-            {user.cover ? (
+            {cover ? (
               <img
-                src={user.cover}
+                src={cover}
                 alt="Cover"
                 className="h-full w-full object-cover"
               />
@@ -263,8 +272,8 @@ export default function Profile() {
             <div className="-mt-12 mb-4 flex items-end justify-between sm:-mt-14">
               <div className="relative group">
                 <img
-                  src={user.photo}
-                  alt={user.name}
+                  src={photo}
+                  alt={name}
                   className="h-24 w-24 rounded-full object-cover ring-4 ring-white shadow-lg sm:h-28 sm:w-28"
                 />
                 <label className="absolute bottom-0.5 right-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow-md ring-2 ring-white transition-all hover:bg-indigo-600 hover:scale-105 active:scale-95 sm:h-9 sm:w-9 cursor-pointer">
@@ -303,9 +312,9 @@ export default function Profile() {
                 dir="auto"
                 className="text-xl font-bold text-slate-900 sm:text-2xl"
               >
-                {user.name}
+                {name}
               </h1>
-              <p className="mt-0.5 text-sm text-slate-500">@{user.username}</p>
+              <p className="mt-0.5 text-sm text-slate-500">@{username}</p>
             </div>
 
             {/* Meta info */}
@@ -313,16 +322,16 @@ export default function Profile() {
               <span className="flex items-center gap-1.5">
                 <FiCalendar className="text-sm" />
                 Joined{" "}
-                {new Date(user.createdAt).toLocaleDateString("en-US", {
+                {new Date(createdAt).toLocaleDateString("en-US", {
                   month: "long",
                   year: "numeric",
                 })}
               </span>
-              {user.dateOfBirth && (
+              {dateOfBirth && (
                 <span className="flex items-center gap-1.5">
                   <FiCalendar className="text-sm" />
                   Born{" "}
-                  {new Date(user.dateOfBirth).toLocaleDateString("en-US", {
+                  {new Date(dateOfBirth).toLocaleDateString("en-US", {
                     day: "numeric",
                     month: "short",
                     year: "numeric",
@@ -338,20 +347,19 @@ export default function Profile() {
                 className="group flex flex-col items-start transition"
               >
                 <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {user.followersCount}
+                  {followersCount}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-slate-500">
                   <FiUsers className="text-sm" />
                   Followers
                 </span>
               </button>
-
               <button
                 type="button"
                 className="group flex flex-col items-start transition"
               >
                 <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {user.followingCount}
+                  {followingCount}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-slate-500">
                   <FiUsers className="text-sm" />
@@ -364,7 +372,7 @@ export default function Profile() {
                 className="group flex flex-col items-start transition"
               >
                 <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {user.bookmarksCount}
+                  {bookmarksCount}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-slate-500">
                   <FiBookmark className="text-sm" />

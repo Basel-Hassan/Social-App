@@ -1,4 +1,11 @@
+import {
+  UseMutateFunction,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { useContext, useState } from "react";
+import { FaBookmark } from "react-icons/fa";
 import {
   FiBookmark,
   FiEdit2,
@@ -6,11 +13,10 @@ import {
   FiMoreHorizontal,
   FiTrash2,
 } from "react-icons/fi";
-import { LoginContext } from "../../Context/LoginContext";
-import axios, { AxiosError } from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "./../../../node_modules/react-hot-toast/src/index";
+import { ImSpinner } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
+import { LoginContext } from "../../Context/LoginContext";
+import toast from "./../../../node_modules/react-hot-toast/src/index";
 import EditPostModal from "./EditPostModal";
 
 const itemClass =
@@ -19,21 +25,43 @@ const itemClass =
 export default function PostMenu({
   userId,
   _id,
-  body ,
-  image ,
-  path
+  body,
+  image,
+  path,
+  bookmarkIsPending,
+  bookmarkMutate,
+  isBookmarked,
 }: {
   userId: string;
   _id: string;
-  body:string | undefined;
-  image:string | undefined;
-  path:string
+  body: string | undefined;
+  image: string | undefined;
+  path: string;
+  bookmarkIsPending: boolean;
+  bookmarkMutate: UseMutateFunction<
+    AxiosResponse<any>,
+    AxiosError<{ message?: string }>,
+    void,
+    unknown
+  >;
+  isBookmarked: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { userId: myId } = useContext(LoginContext);
   const query = useQueryClient();
   const navigate = useNavigate();
+
+  const handleCopyLink = async () => {
+    const postUrl = `${window.location.origin}/postdetails/${_id}`;
+
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      toast.success("Post link copied!");
+    } catch {
+      toast.error("Failed to copy link");
+    }
+  };
 
   function handleDeletPost() {
     return axios.delete(`https://route-posts.routemisr.com/posts/${_id}`, {
@@ -46,7 +74,9 @@ export default function PostMenu({
   const { mutate } = useMutation({
     mutationFn: handleDeletPost,
     onError: (err: AxiosError<{ message?: string }>) => {
-      toast.error(err.response?.data?.message || err.message || "Something went wrong");
+      toast.error(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     },
     onSuccess: (res) => {
       toast.success(res.data.message);
@@ -127,7 +157,7 @@ export default function PostMenu({
       >
         <FiMoreHorizontal />
       </button>
-
+        
       {isOpen && (
         <div
           role="menu"
@@ -151,15 +181,38 @@ export default function PostMenu({
           <button
             type="button"
             role="menuitem"
-            className={`${itemClass} text-slate-700 hover:bg-indigo-50 hover:text-indigo-600`}
+            onClick={() => {
+              bookmarkMutate();
+              setIsOpen(false);
+            }}
+            disabled={bookmarkIsPending}
+            className={`${itemClass} text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed ${isBookmarked && "bg-indigo-50 font-semibold text-indigo-600 hover:bg-indigo-100"}`}
           >
-            <FiBookmark className="text-base" />
-            Save post
+            {bookmarkIsPending ? (
+              <>
+                <ImSpinner className="animate-spin" />
+                Loading...
+              </>
+            ) : isBookmarked ? (
+              <>
+                <FaBookmark className="scale-110 fill-current text-lg" />
+                Saved post
+              </>
+            ) : (
+              <>
+                <FiBookmark className="text-lg" />
+                Save post
+              </>
+            )}
           </button>
 
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              handleCopyLink();
+              setIsOpen(false);
+            }}
             className={`${itemClass} text-slate-700 hover:bg-indigo-50 hover:text-indigo-600`}
           >
             <FiLink className="text-base" />
@@ -187,7 +240,14 @@ export default function PostMenu({
         </div>
       )}
 
-      {isEditOpen && <EditPostModal setIsEditOpen={setIsEditOpen} _id={_id} image={image} body={body}/>}
+      {isEditOpen && (
+        <EditPostModal
+          setIsEditOpen={setIsEditOpen}
+          _id={_id}
+          image={image}
+          body={body}
+        />
+      )}
     </div>
   );
 }

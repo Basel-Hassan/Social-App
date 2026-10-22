@@ -24,3 +24,10 @@ export const loginSchema = zod.object({
 })
 
 export type loginSchemaType = zod.infer<typeof loginSchema> 
+
+export const changePassSchema = zod.object({
+  password : zod.string().nonempty("Password is required") , 
+  newPassword : zod.string().nonempty("Password is required").regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/ , "Password must include at least 8 characters , an uppercase letter (A-Z) , a lowercase letter (a-z) , a number (0-9) , a special character (# ? ! @ $ % ^ & * -)") , 
+})
+
+export type changePassSchemaType = zod.infer<typeof changePassSchema> 

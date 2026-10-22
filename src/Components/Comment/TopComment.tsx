@@ -10,6 +10,7 @@ import InputReplyComment from "./InputReplyComment";
 import RepliesComments from "./RepliesComments";
 import RepliesSkeleton from "./RepliesSkeleton";
 import RepliesError from "./RepliesError";
+import CommentMenu from "./CommentMenu";
 
 export default function TopComment({
   topComment,
@@ -29,13 +30,14 @@ export default function TopComment({
     repliesCount,
     likes,
   } = topComment;
-  const { name, photo } = commentCreator;
+  const { name, photo, _id: commentCreatorID } = commentCreator;
   const { userId: myId } = useContext(LoginContext);
   const isLike = likes?.includes(myId) ?? false;
   const query = useQueryClient();
   const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
   const isReply = repliesCount > 0;
   const [isRepliesOpen, setIsRepliesOpen] = useState(false);
+  const isOwner = commentCreatorID === myId;
 
   function doLikeApi() {
     return axios.put(
@@ -88,12 +90,28 @@ export default function TopComment({
 
         <div className="min-w-0 flex-1">
           <div className="rounded-2xl rounded-tl-md bg-slate-100 px-4 py-2.5">
-            <p dir="auto" className="text-xs font-semibold text-slate-900">
-              {name}
-            </p>
-            <p dir="auto" className="mt-0.5 break-words text-sm text-slate-700">
-              {content}
-            </p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p dir="auto" className="text-xs font-semibold text-slate-900">
+                  {name}
+                </p>
+
+                <p
+                  dir="auto"
+                  className="mt-0.5 break-words text-sm text-slate-700"
+                >
+                  {content}
+                </p>
+              </div>
+
+              {isOwner && <CommentMenu
+                commentID={_id}
+                content={content}
+                postId={postId}
+                image={image}
+              />}
+            </div>
+
             {image && (
               <img
                 src={image}

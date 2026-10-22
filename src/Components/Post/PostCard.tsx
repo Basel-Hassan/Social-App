@@ -8,6 +8,9 @@ import {
   FiHeart,
   FiMessageCircle,
   FiShare2,
+  FiUserCheck,
+  FiUserMinus,
+  FiUserPlus,
 } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
 import { Link, useParams } from "react-router-dom";
@@ -21,6 +24,7 @@ import PostMenu from "./PostMenu";
 import PostSkeleton from "./PostSkeleton";
 import LikesModal from "./LikesModal";
 import toast from "./../../../node_modules/react-hot-toast/src/index";
+import { ProfileContext } from "../../Context/ProfileContext";
 
 export default function PostCard({
   data,
@@ -54,6 +58,17 @@ export default function PostCard({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const textInput = useRef<HTMLTextAreaElement>(null);
   const isBookmarked = bookmarked;
+
+  const profileContext = useContext(ProfileContext);
+
+  if (!profileContext) {
+    throw new Error("PostCard must be used inside ProfileContextProvider");
+  }
+
+  const { user: profileUser } = profileContext;
+  const following = profileUser?.following;
+
+  const [isFollow, setIsFollow] = useState(following?.includes(userId));
 
   function getAllComments() {
     return axios.get(
@@ -172,10 +187,38 @@ export default function PostCard({
       toast.error(
         err.response?.data?.message || err.message || "Something went wrong",
       );
-    }
+    },
   });
 
-  if (isLoading) {
+  function doFollow() {
+    return axios.put(
+      `https://route-posts.routemisr.com/users/${userId}/follow`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+  }
+
+  const { mutate: followMutate, isPending: followIsPending } = useMutation({
+    mutationFn: doFollow,
+    onSuccess: (res) => {
+      query.invalidateQueries({ queryKey: ["getAllPosts"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      query.invalidateQueries({ queryKey: ["getSinglePost", id] });
+      toast.success(res.data.message);
+      setIsFollow(!isFollow);
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(
+        err.response?.data.message || err.message || "Something went wrong",
+      );
+    },
+  });
+
+  if (isLoading && !profileUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
         <div className="mx-auto w-full max-w-2xl">
@@ -188,7 +231,14 @@ export default function PostCard({
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
         <div className="mx-auto w-full max-w-2xl">
-          <ErrorState message={error.message} refetch={refetch} />
+          <ErrorState
+            message={
+              axios.isAxiosError<{ message?: string }>(error)
+                ? error.response?.data?.message
+                : error.message
+            }
+            refetch={refetch}
+          />
         </div>
       </div>
     );
@@ -224,12 +274,70 @@ export default function PostCard({
           </p>
         </div>
 
+        {userId !== myId && (
+          <>
+            {isFollow ? (
+              <button
+                type="button"
+                disabled={followIsPending}
+                onClick={() => {
+                  followMutate();
+                }}
+                className="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-600 ring-1 ring-indigo-100 transition hover:bg-red-50 hover:text-red-600 hover:ring-red-200 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              >
+                {followIsPending ? (
+                  <>
+                    <ImSpinner className="animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <FiUserCheck className="text-sm group-hover:hidden" />
+                    <FiUserMinus className="hidden text-sm group-hover:block" />
+
+                    <span className="hidden sm:inline group-hover:sm:hidden">
+                      Following
+                    </span>
+                    <span className="hidden group-hover:sm:inline">
+                      Unfollow
+                    </span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={followIsPending}
+                onClick={() => {
+                  followMutate();
+                }}
+                className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              >
+                {followIsPending ? (
+                  <>
+                    <ImSpinner className="animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <FiUserPlus className="text-sm" />
+                    <span className="hidden sm:inline">Follow</span>``
+                  </>
+                )}
+              </button>
+            )}
+          </>
+        )}
+
         <PostMenu
           userId={userId}
           _id={_id}
           image={image}
           body={body}
           path={path}
+          bookmarkIsPending={bookmarkIsPending}
+          bookmarkMutate={bookmarkMutate}
+          isBookmarked={isBookmarked}
         />
       </div>
 
@@ -407,9 +515,20 @@ export default function PostCard({
 
       {isPostDetails
         ? Data?.data.data.comments?.map((comment: CommentType) => (
-            <TopComment key={comment._id} topComment={comment} isPostDetails={isPostDetails} postId={_id}/>
+            <TopComment
+              key={comment._id}
+              topComment={comment}
+              isPostDetails={isPostDetails}
+              postId={_id}
+            />
           ))
-        : topComment && <TopComment topComment={topComment} isPostDetails={isPostDetails} postId={_id}/>}
+        : topComment && (
+            <TopComment
+              topComment={topComment}
+              isPostDetails={isPostDetails}
+              postId={_id}
+            />
+          )}
 
       {isLikeOpen && (
         <LikesModal
