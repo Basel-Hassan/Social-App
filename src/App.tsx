@@ -17,6 +17,8 @@ import Offline from "./Components/Offline/Offline";
 import { useEffect } from "react";
 import Settings from "./Pages/Settings/Settings";
 import ProfileContextProvider from "./Context/ProfileContext";
+import UserProfile from "./Pages/UserProfile/UserProfile";
+import Bookmarks from "./Pages/Bookmarks/Bookmarks";
 
 const query = new QueryClient();
 
@@ -68,6 +70,15 @@ function App() {
           ),
         },
         {
+          path: "bookmarks",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <Bookmarks />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
           path: "settings",
           element: (
             <ProtectedRout>
@@ -82,6 +93,15 @@ function App() {
             <ProtectedRout>
               {" "}
               <SinglePost />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "profile/:id",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <UserProfile />{" "}
             </ProtectedRout>
           ),
         },

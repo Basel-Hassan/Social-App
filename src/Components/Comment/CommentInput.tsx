@@ -52,6 +52,7 @@ export default function CommentInput({
       toast.success(res.data.message);
       query.invalidateQueries({queryKey:["userPostsApi"]})
       query.invalidateQueries({queryKey:["getAllPosts"]})
+      query.invalidateQueries({queryKey:["getBookMarks"]})
       query.invalidateQueries({ queryKey: ["getAllComments", postId] });
     },
 

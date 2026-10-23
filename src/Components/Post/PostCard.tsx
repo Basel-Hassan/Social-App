@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { FaBookmark, FaHeart } from "react-icons/fa";
 import {
   FiBookmark,
@@ -8,23 +8,20 @@ import {
   FiHeart,
   FiMessageCircle,
   FiShare2,
-  FiUserCheck,
-  FiUserMinus,
-  FiUserPlus,
 } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { LoginContext } from "../../Context/LoginContext";
 import type { CommentType } from "../../Types/Coment.type";
 import type { PostType } from "../../Types/Post.type";
 import CommentInput from "../Comment/CommentInput";
 import TopComment from "../Comment/TopComment";
 import ErrorState from "../Error/ApiError";
+import Follow from "../Follow/Follow";
+import toast from "./../../../node_modules/react-hot-toast/src/index";
+import LikesModal from "./LikesModal";
 import PostMenu from "./PostMenu";
 import PostSkeleton from "./PostSkeleton";
-import LikesModal from "./LikesModal";
-import toast from "./../../../node_modules/react-hot-toast/src/index";
-import { ProfileContext } from "../../Context/ProfileContext";
 
 export default function PostCard({
   data,
@@ -58,21 +55,7 @@ export default function PostCard({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const textInput = useRef<HTMLTextAreaElement>(null);
   const isBookmarked = bookmarked;
-
-  const profileContext = useContext(ProfileContext);
-
-  if (!profileContext) {
-    throw new Error("PostCard must be used inside ProfileContextProvider");
-  }
-
-  const { user: profileUser } = profileContext;
-  const following = profileUser?.following;
-
-  const [isFollow, setIsFollow] = useState(following?.includes(userId));
-
-  useEffect(() => {
-  setIsFollow(following?.includes(userId) ?? false);
-}, [following, userId]);
+  const navigate = useNavigate();
 
   function getAllComments() {
     return axios.get(
@@ -114,6 +97,8 @@ export default function PostCard({
       query.invalidateQueries({ queryKey: ["getSinglePost", id] });
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["getLikes", _id] });
+      query.invalidateQueries({ queryKey: ["userPostsApi" , id] });
+      query.invalidateQueries({ queryKey: ["getBookMarks"] });
     },
   });
 
@@ -184,6 +169,8 @@ export default function PostCard({
     onSuccess: (res) => {
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      query.invalidateQueries({ queryKey: ["getBookMarks"] });
+      query.invalidateQueries({ queryKey: ["myProfileApi"] });
       query.invalidateQueries({ queryKey: ["getSinglePost", id] });
       toast.success(res.data.message);
     },
@@ -194,35 +181,7 @@ export default function PostCard({
     },
   });
 
-  function doFollow() {
-    return axios.put(
-      `https://route-posts.routemisr.com/users/${userId}/follow`,
-      null,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      },
-    );
-  }
-
-  const { mutate: followMutate, isPending: followIsPending } = useMutation({
-    mutationFn: doFollow,
-    onSuccess: (res) => {
-      query.invalidateQueries({ queryKey: ["getAllPosts"] });
-      query.invalidateQueries({ queryKey: ["userPostsApi"] });
-      query.invalidateQueries({ queryKey: ["myProfileApi"] });
-      query.invalidateQueries({ queryKey: ["getSinglePost", id] });
-      toast.success(res.data.message);
-    },
-    onError: (err: AxiosError<{ message?: string }>) => {
-      toast.error(
-        err.response?.data.message || err.message || "Something went wrong",
-      );
-    },
-  });
-
-  if (isLoading && !profileUser) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
         <div className="mx-auto w-full max-w-2xl">
@@ -250,18 +209,23 @@ export default function PostCard({
 
   return (
     <article className="w-full max-w-2xl rounded-3xl bg-white p-5 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <img
           src={photo}
           alt={name}
-          className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-indigo-100"
+          onClick={() => {
+            navigate(`/profile/${userId}`);
+          }}
+          className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-indigo-100 cursor-pointer"
         />
 
         <div className="min-w-0 flex-1">
           <p
             dir="auto"
-            className="truncate text-sm font-semibold text-slate-900"
+            onClick={() => {
+              navigate(`/profile/${userId}`);
+            }}
+            className="truncate text-sm font-semibold text-slate-900 cursor-pointer hover:underline"
           >
             {name}
             {isShare && (
@@ -278,60 +242,7 @@ export default function PostCard({
           </p>
         </div>
 
-        {userId !== myId && (
-          <>
-            {isFollow ? (
-              <button
-                type="button"
-                disabled={followIsPending}
-                onClick={() => {
-                  followMutate();
-                }}
-                className="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-600 ring-1 ring-indigo-100 transition hover:bg-red-50 hover:text-red-600 hover:ring-red-200 focus:outline-none focus:ring-4 focus:ring-indigo-100"
-              >
-                {followIsPending ? (
-                  <>
-                    <ImSpinner className="animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <FiUserCheck className="text-sm group-hover:hidden" />
-                    <FiUserMinus className="hidden text-sm group-hover:block" />
-
-                    <span className="hidden sm:inline group-hover:sm:hidden">
-                      Following
-                    </span>
-                    <span className="hidden group-hover:sm:inline">
-                      Unfollow
-                    </span>
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={followIsPending}
-                onClick={() => {
-                  followMutate();
-                }}
-                className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
-              >
-                {followIsPending ? (
-                  <>
-                    <ImSpinner className="animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <FiUserPlus className="text-sm" />
-                    <span className="hidden sm:inline">Follow</span>
-                  </>
-                )}
-              </button>
-            )}
-          </>
-        )}
+        {userId !== myId && <Follow userId={userId} />}
 
         <PostMenu
           userId={userId}
@@ -345,7 +256,6 @@ export default function PostCard({
         />
       </div>
 
-      {/* Body */}
       {body && (
         <p
           dir="auto"
@@ -355,20 +265,25 @@ export default function PostCard({
         </p>
       )}
 
-      {/* ========== البوست الأصلي (لو ده شير) ========== */}
       {sharedPost && (
         <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/50">
-          {/* هيدر البوست الأصلي */}
+          
           <div className="flex items-center gap-3 p-4 pb-2">
             <img
               src={sharedPost.user.photo}
               alt={sharedPost.user.name}
-              className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white"
+              onClick={() => {
+                navigate(`/profile/${sharedPost.user._id}`)
+              }}
+              className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white cursor-pointer"
             />
             <div className="min-w-0 flex-1">
               <p
                 dir="auto"
-                className="truncate text-sm font-semibold text-slate-900"
+                onClick={() => {
+                navigate(`/profile/${sharedPost.user._id}`)
+              }}
+                className="truncate text-sm font-semibold text-slate-900 cursor-pointer hover:underline"
               >
                 {sharedPost.user.name}
               </p>
@@ -408,7 +323,6 @@ export default function PostCard({
         </div>
       )}
 
-      {/* ========== صورة البوست العادي (لو مش شير) ========== */}
       {!sharedPost && image && (
         <img
           src={image}
@@ -418,7 +332,6 @@ export default function PostCard({
         />
       )}
 
-      {/* Counts */}
       <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
         <button
           type="button"
@@ -435,7 +348,6 @@ export default function PostCard({
         </span>
       </div>
 
-      {/* Actions */}
       <div className="mt-3 flex items-center gap-1 border-t border-slate-100 pt-2">
         <button
           type="button"
@@ -515,7 +427,6 @@ export default function PostCard({
         postId={_id}
         isRefetch={isPostDetails ? ["getAllComments", _id] : ["getAllPosts"]}
       />
-      {/* Top comment */}
 
       {isPostDetails
         ? Data?.data.data.comments?.map((comment: CommentType) => (
@@ -524,6 +435,7 @@ export default function PostCard({
               topComment={comment}
               isPostDetails={isPostDetails}
               postId={_id}
+              userId={userId}
             />
           ))
         : topComment && (
@@ -531,6 +443,7 @@ export default function PostCard({
               topComment={topComment}
               isPostDetails={isPostDetails}
               postId={_id}
+              userId={userId}
             />
           )}
 

@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { FiHeart, FiUsers, FiX } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
 import { LikeUser } from './../../Types/Like.type';
+import { useNavigate } from "react-router-dom";
 
 
 export default function LikesModal({
@@ -10,7 +11,7 @@ export default function LikesModal({
   setIsLikeOpen,
   likesIsError,
   likesIsLoading,
-  postID,
+  postID
 }: {
   users: LikeUser[];
   setIsLikeOpen: Dispatch<SetStateAction<boolean>>;
@@ -18,6 +19,7 @@ export default function LikesModal({
   likesIsLoading: boolean;
   postID: string;
 }) {
+  const nivigate = useNavigate()
   const Query = useQueryClient();
   return (
     <div
@@ -132,6 +134,9 @@ export default function LikesModal({
                   <li
                     key={user._id}
                     className="flex cursor-pointer items-center gap-3 rounded-2xl p-2.5 transition hover:bg-indigo-50"
+                    onClick={() => {
+                      nivigate(`/profile/${user._id}`)
+                    }}
                   >
                     <img
                       src={user.photo}

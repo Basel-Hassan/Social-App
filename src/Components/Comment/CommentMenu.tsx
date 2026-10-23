@@ -20,11 +20,13 @@ export default function CommentMenu({
   content,
   postId,
   image,
+  userId
 }: {
   commentID: string;
   content: string;
   postId: string;
   image: string | undefined;
+  userId:string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -36,11 +38,11 @@ export default function CommentMenu({
   const [, setIsImageRemoved] = useState(false);
 
   useEffect(() => {
-  if (isEditOpen) {
-    setIsUploaded(image ?? "");
-    setIsImageRemoved(false);
-  }
-}, [isEditOpen, image]);
+    if (isEditOpen) {
+      setIsUploaded(image ?? "");
+      setIsImageRemoved(false);
+    }
+  }, [isEditOpen, image]);
 
   function deleteCommentApi() {
     return axios.delete(
@@ -60,6 +62,7 @@ export default function CommentMenu({
       query.invalidateQueries({ queryKey: ["getAllComments", postId] });
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      query.invalidateQueries({ queryKey: ["getBookMarks"] });
       setIsDeleteOpen(false);
     },
     onError: (err: AxiosError<{ message?: string }>) => {
@@ -108,11 +111,19 @@ export default function CommentMenu({
         });
 
         query.invalidateQueries({
+          queryKey: ["getBookMarks"],
+        });
+
+        query.invalidateQueries({
           queryKey: ["getSinglePost", postId],
         });
 
         query.invalidateQueries({
           queryKey: ["getAllComments", postId],
+        });
+
+        query.invalidateQueries({
+          queryKey: ["userPostsApi" , userId],
         });
 
         toast.success(res.data.message || "Comment updated successfully");
@@ -128,24 +139,24 @@ export default function CommentMenu({
     });
 
   function handleUpdateComment() {
-  const newBody = textInput.current?.value.trim() ?? "";
-  const file = imageInput.current?.files?.[0];
+    const newBody = textInput.current?.value.trim() ?? "";
+    const file = imageInput.current?.files?.[0];
 
-  if (!newBody && !isUploaded && !file) {
-    toast.error("Please enter a comment or add an image");
-    return;
+    if (!newBody && !isUploaded && !file) {
+      toast.error("Please enter a comment or add an image");
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("content", newBody);
+
+    if (file) {
+      formData.append("image", file);
+    }
+
+    editCommentMutate(formData);
   }
-
-  const formData = new FormData();
-
-  formData.append("content", newBody);
-
-  if (file) {
-    formData.append("image", file);
-  }
-
-  editCommentMutate(formData);
-}
 
   return (
     <>

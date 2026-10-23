@@ -1,24 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { useContext, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useContext } from "react";
 import {
   FiAlertCircle,
-  FiBookmark,
-  FiCalendar,
-  FiCamera,
-  FiRefreshCw,
-  FiUsers
+  FiRefreshCw
 } from "react-icons/fi";
 import CreatePost from "../../Components/Post/CreatePost";
 import PostCard from "../../Components/Post/PostCard";
+import ProfileInfo from "../../Components/Profile/ProfileInfo";
 import { ProfileContext } from "../../Context/ProfileContext";
 import { PostType } from "../../Types/Post.type";
-import toast from "./../../../node_modules/react-hot-toast/src/index";
 
 export default function Profile() {
   const Query = useQueryClient();
-  const photoInput = useRef<HTMLInputElement>(null);
-  const formData = new FormData();
 
   const context = useContext(ProfileContext);
 
@@ -51,51 +45,6 @@ export default function Profile() {
   });
 
   const posts = userPostsData?.data.data.posts;
-
-  function uploadProfilePhotoApi(formData: FormData) {
-    return axios.put(
-      `https://route-posts.routemisr.com/users/upload-photo`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      },
-    );
-  }
-
-  const { mutate } = useMutation<
-    AxiosResponse<{ message?: string }>,
-    AxiosError<{ message?: string }>,
-    FormData
-  >({
-    mutationFn: uploadProfilePhotoApi,
-  });
-
-  function handleUploadPhoto() {
-    const photo = photoInput.current?.files?.[0];
-
-    if (!photo) return;
-
-    if (photo) formData.append("photo", photo);
-
-    const toastId = toast.loading("Uploading profile photo...");
-    mutate(formData, {
-      onSuccess: (res) => {
-        toast.success(res.data.message ?? "Photo uploaded successfully", {
-          id: toastId,
-        });
-        Query.invalidateQueries({ queryKey: ["myProfileApi"] });
-        Query.invalidateQueries({ queryKey: ["userPostsApi"] });
-      },
-      onError: (err) => {
-        toast.error(
-          err.response?.data?.message || err.message || "Something went wrong",
-          { id: toastId },
-        );
-      },
-    });
-  }
 
   if (isLoading || userPostsIsLoading) {
     return (
@@ -237,6 +186,7 @@ export default function Profile() {
   }
 
   const {
+    _id,
     cover,
     photo,
     name,
@@ -252,123 +202,7 @@ export default function Profile() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
       <div className="mx-auto w-full max-w-2xl">
 
-        <div className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 mb-7">
-
-          <div className="relative h-36 bg-gradient-to-r from-indigo-400 via-sky-400 to-indigo-300 sm:h-44">
-            {cover ? (
-              <img
-                src={cover}
-                alt="Cover"
-                className="h-full w-full object-cover"
-              />
-            ) : null}
-          </div>
-
-          <div className="relative px-5 pb-6 sm:px-6">
-
-            <div className="-mt-12 mb-4 flex items-end justify-between sm:-mt-14">
-              <div className="relative group">
-                <img
-                  src={photo}
-                  alt={name}
-                  className="h-24 w-24 rounded-full object-cover ring-4 ring-white shadow-lg sm:h-28 sm:w-28"
-                />
-                <label className="absolute bottom-0.5 right-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow-md ring-2 ring-white transition-all hover:bg-indigo-600 hover:scale-105 active:scale-95 sm:h-9 sm:w-9 cursor-pointer">
-                  <FiCamera className="text-sm sm:text-base" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    ref={photoInput}
-                    onChange={handleUploadPhoto}
-                  />
-                </label>
-              </div>
-
-              {/* <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="flex items-center gap-1.5 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-600 active:scale-[0.98]"
-                >
-                  <FiUserPlus className="text-base" />
-                  Follow
-                </button>
-              </div> */}
-            </div>
-
-            <div>
-              <h1
-                dir="auto"
-                className="text-xl font-bold text-slate-900 sm:text-2xl"
-              >
-                {name}
-              </h1>
-              <p className="mt-0.5 text-sm text-slate-500">@{username}</p>
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <FiCalendar className="text-sm" />
-                Joined{" "}
-                {new Date(createdAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-              {dateOfBirth && (
-                <span className="flex items-center gap-1.5">
-                  <FiCalendar className="text-sm" />
-                  Born{" "}
-                  {new Date(dateOfBirth).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </span>
-              )}
-            </div>
-
-            <div className="mt-5 flex gap-6 border-t border-slate-100 pt-4">
-              <button
-                type="button"
-                className="group flex flex-col items-start transition"
-              >
-                <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {followersCount}
-                </span>
-                <span className="flex items-center gap-1 text-xs text-slate-500">
-                  <FiUsers className="text-sm" />
-                  Followers
-                </span>
-              </button>
-              <button
-                type="button"
-                className="group flex flex-col items-start transition"
-              >
-                <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {followingCount}
-                </span>
-                <span className="flex items-center gap-1 text-xs text-slate-500">
-                  <FiUsers className="text-sm" />
-                  Following
-                </span>
-              </button>
-
-              <button
-                type="button"
-                className="group flex flex-col items-start transition"
-              >
-                <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
-                  {bookmarksCount}
-                </span>
-                <span className="flex items-center gap-1 text-xs text-slate-500">
-                  <FiBookmark className="text-sm" />
-                  Bookmarks
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <ProfileInfo userId={_id} cover={cover} photo={photo} name={name} username={username} createdAt={createdAt} dateOfBirth={dateOfBirth} followersCount={followersCount} followingCount={followingCount} bookmarksCount={bookmarksCount} isMyProfile={true}/>
 
         <CreatePost />
 
