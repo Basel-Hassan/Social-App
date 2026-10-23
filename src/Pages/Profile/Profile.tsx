@@ -6,10 +6,8 @@ import {
   FiBookmark,
   FiCalendar,
   FiCamera,
-  FiEdit2,
   FiRefreshCw,
-  FiUserPlus,
-  FiUsers,
+  FiUsers
 } from "react-icons/fi";
 import CreatePost from "../../Components/Post/CreatePost";
 import PostCard from "../../Components/Post/PostCard";
@@ -253,9 +251,9 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
       <div className="mx-auto w-full max-w-2xl">
-        {/* ===== Profile Header Card ===== */}
+
         <div className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 mb-7">
-          {/* Cover */}
+
           <div className="relative h-36 bg-gradient-to-r from-indigo-400 via-sky-400 to-indigo-300 sm:h-44">
             {cover ? (
               <img
@@ -266,9 +264,8 @@ export default function Profile() {
             ) : null}
           </div>
 
-          {/* Avatar + Info */}
           <div className="relative px-5 pb-6 sm:px-6">
-            {/* Avatar */}
+
             <div className="-mt-12 mb-4 flex items-end justify-between sm:-mt-14">
               <div className="relative group">
                 <img
@@ -288,8 +285,7 @@ export default function Profile() {
                 </label>
               </div>
 
-              {/* Action buttons */}
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <button
                   type="button"
                   className="flex items-center gap-1.5 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-600 active:scale-[0.98]"
@@ -297,16 +293,9 @@ export default function Profile() {
                   <FiUserPlus className="text-base" />
                   Follow
                 </button>
-                <button
-                  type="button"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-                >
-                  <FiEdit2 className="text-base" />
-                </button>
-              </div>
+              </div> */}
             </div>
 
-            {/* Name & Username */}
             <div>
               <h1
                 dir="auto"
@@ -317,7 +306,6 @@ export default function Profile() {
               <p className="mt-0.5 text-sm text-slate-500">@{username}</p>
             </div>
 
-            {/* Meta info */}
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
                 <FiCalendar className="text-sm" />
@@ -340,7 +328,6 @@ export default function Profile() {
               )}
             </div>
 
-            {/* Stats */}
             <div className="mt-5 flex gap-6 border-t border-slate-100 pt-4">
               <button
                 type="button"

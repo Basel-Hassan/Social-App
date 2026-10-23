@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FaBookmark, FaHeart } from "react-icons/fa";
 import {
   FiBookmark,
@@ -69,6 +69,10 @@ export default function PostCard({
   const following = profileUser?.following;
 
   const [isFollow, setIsFollow] = useState(following?.includes(userId));
+
+  useEffect(() => {
+  setIsFollow(following?.includes(userId) ?? false);
+}, [following, userId]);
 
   function getAllComments() {
     return axios.get(
@@ -207,9 +211,9 @@ export default function PostCard({
     onSuccess: (res) => {
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["userPostsApi"] });
+      query.invalidateQueries({ queryKey: ["myProfileApi"] });
       query.invalidateQueries({ queryKey: ["getSinglePost", id] });
       toast.success(res.data.message);
-      setIsFollow(!isFollow);
     },
     onError: (err: AxiosError<{ message?: string }>) => {
       toast.error(
@@ -321,7 +325,7 @@ export default function PostCard({
                 ) : (
                   <>
                     <FiUserPlus className="text-sm" />
-                    <span className="hidden sm:inline">Follow</span>``
+                    <span className="hidden sm:inline">Follow</span>
                   </>
                 )}
               </button>
