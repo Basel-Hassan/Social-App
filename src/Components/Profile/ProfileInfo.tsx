@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   FiBookmark,
   FiCalendar,
@@ -11,6 +11,7 @@ import {
 import toast from "./../../../node_modules/react-hot-toast/src/index";
 import Follow from "../Follow/Follow";
 import { useNavigate } from "react-router-dom";
+import FollowersModal from "../Followers/FollowersModal";
 
 export default function ProfileInfo({
   userId,
@@ -24,6 +25,8 @@ export default function ProfileInfo({
   followingCount,
   bookmarksCount,
   isMyProfile,
+  following,
+  followers
 }: {
   userId: string;
   cover?: string;
@@ -36,6 +39,8 @@ export default function ProfileInfo({
   followingCount: number;
   bookmarksCount: number;
   isMyProfile: boolean;
+  following:string[];
+  followers:string[];
 }) {
   const Query = useQueryClient();
   const photoInput = useRef<HTMLInputElement>(null);
@@ -43,6 +48,8 @@ export default function ProfileInfo({
   const formData = new FormData();
   const coverFormData = new FormData();
   const navigate = useNavigate()
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false)
+  const [isFollowingOpen, setIsFollowingOpen] = useState(false)
 
   function uploadProfilePhotoApi(formData: FormData) {
     return axios.put(
@@ -181,7 +188,7 @@ export default function ProfileInfo({
               </label>
             )}
           </div>
-          {!isMyProfile && <Follow userId={userId} />}
+          {!isMyProfile && <Follow userId={userId} isBig={true} isSuggest={false}/>}
         </div>
 
         <div>
@@ -219,7 +226,10 @@ export default function ProfileInfo({
         <div className="mt-5 flex gap-6 border-t border-slate-100 pt-4">
           <button
             type="button"
-            className="group flex flex-col items-start transition"
+            onClick={() => {
+              setIsFollowersOpen(true)
+            }}
+            className="group flex flex-col items-start transition cursor-pointer"
           >
             <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
               {followersCount}
@@ -231,7 +241,10 @@ export default function ProfileInfo({
           </button>
           <button
             type="button"
-            className="group flex flex-col items-start transition"
+            onClick={() => {
+              setIsFollowingOpen(true)
+            }}
+            className="group flex flex-col items-start transition cursor-pointer"
           >
             <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600">
               {followingCount}
@@ -261,6 +274,9 @@ export default function ProfileInfo({
           )}
         </div>
       </div>
+      {isFollowersOpen && <FollowersModal users={followers} closeFn={setIsFollowersOpen} isMyProfile={isMyProfile}/>}
+      {isFollowingOpen && <FollowersModal users={following} closeFn={setIsFollowingOpen} isMyProfile={isMyProfile}/>}
+      
     </div>
   );
 }

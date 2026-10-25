@@ -11,15 +11,15 @@ import { LoginContext } from "../../Context/LoginContext";
 export default function UserProfile() {
   const { id } = useParams();
   const Query = useQueryClient();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { userId: myId } = useContext(LoginContext);
 
   useEffect(() => {
-    Query.invalidateQueries({queryKey:["userPostsApi" , id]})
+    Query.invalidateQueries({ queryKey: ["userPostsApi", id] });
     if (myId == id) {
-        navigate("/profile")
+      navigate("/profile");
     }
-  }, [id , navigate])
+  }, [id, navigate]);
   function userProfileApi() {
     return axios.get(`https://route-posts.routemisr.com/users/${id}/profile`, {
       headers: {
@@ -29,7 +29,7 @@ export default function UserProfile() {
   }
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["getUserProfile" , id],
+    queryKey: ["getUserProfile", id],
     queryFn: userProfileApi,
   });
 
@@ -47,7 +47,7 @@ export default function UserProfile() {
     isError: userPostsIsError,
     error: userPostsError,
   } = useQuery({
-    queryKey: ["userPostsApi" , id],
+    queryKey: ["userPostsApi", id],
     queryFn: userPostsApi,
     enabled: !isError && !isLoading && !!data,
   });
@@ -175,7 +175,7 @@ export default function UserProfile() {
             type="button"
             className="mt-6 inline-flex items-center gap-2 cursor-pointer rounded-2xl bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-600 active:scale-[0.98]"
             onClick={() => {
-              Query.invalidateQueries({ queryKey: ["getUserProfile" , id] });
+              Query.invalidateQueries({ queryKey: ["getUserProfile", id] });
               Query.invalidateQueries({ queryKey: ["userPostsApi"] });
             }}
           >
@@ -203,6 +203,8 @@ export default function UserProfile() {
     followersCount,
     followingCount,
     bookmarksCount,
+    following,
+    followers
   } = data!.data.data.user;
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
@@ -218,6 +220,8 @@ export default function UserProfile() {
           followersCount={followersCount}
           followingCount={followingCount}
           bookmarksCount={bookmarksCount}
+          following={following}
+          followers={followers}
           isMyProfile={false}
         />
 

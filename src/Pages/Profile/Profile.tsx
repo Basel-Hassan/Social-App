@@ -196,13 +196,15 @@ export default function Profile() {
     followersCount,
     followingCount,
     bookmarksCount,
+    following,
+    followers
   } = user;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
       <div className="mx-auto w-full max-w-2xl">
 
-        <ProfileInfo userId={_id} cover={cover} photo={photo} name={name} username={username} createdAt={createdAt} dateOfBirth={dateOfBirth} followersCount={followersCount} followingCount={followingCount} bookmarksCount={bookmarksCount} isMyProfile={true}/>
+        <ProfileInfo userId={_id} cover={cover} photo={photo} name={name} username={username} createdAt={createdAt} dateOfBirth={dateOfBirth} followersCount={followersCount} followingCount={followingCount} bookmarksCount={bookmarksCount} followers={followers} following={following} isMyProfile={true}/>
 
         <CreatePost />
 

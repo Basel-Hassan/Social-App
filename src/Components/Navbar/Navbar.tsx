@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useContext, useState } from "react";
+import { FaUserPlus } from "react-icons/fa";
 import {
   FiBell,
   FiHome,
@@ -11,8 +14,6 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../Context/LoginContext";
 import Notification from "../Notfication/Notfication";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Navbar() {
   const { userLogin, setUserLogin } = useContext(LoginContext);
@@ -23,7 +24,8 @@ export default function Navbar() {
     ? [
         { to: "/", label: "Home", icon: FiHome },
         { to: "/profile", label: "Profile", icon: FiUser },
-        { to: "/settings",  icon: FiSettings }
+        { to: "/suggestions",label: "Suggestions", icon: FaUserPlus   },
+        { to: "/settings", icon: FiSettings },
       ]
     : [
         { to: "/register", label: "Register", icon: FiUserPlus },

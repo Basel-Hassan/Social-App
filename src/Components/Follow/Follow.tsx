@@ -7,7 +7,7 @@ import toast from "./../../../node_modules/react-hot-toast/src/index";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
-export default function Follow({ userId }: { userId: string }) {
+export default function Follow({ userId , isBig = false , isSuggest}: { userId: string , isBig:boolean , isSuggest:boolean}) {
   const query = useQueryClient();
   const { id } = useParams();
   const profileContext = useContext(ProfileContext);
@@ -43,7 +43,7 @@ export default function Follow({ userId }: { userId: string }) {
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["userPostsApi"] });
       query.invalidateQueries({ queryKey: ["myProfileApi"] });
-      query.invalidateQueries({ queryKey: ["getUserProfile" , userId] });
+      query.invalidateQueries({ queryKey: ["getUserProfile", userId] });
       query.invalidateQueries({ queryKey: ["getSinglePost", id] });
       toast.success(res.data.message);
     },
@@ -62,7 +62,7 @@ export default function Follow({ userId }: { userId: string }) {
           onClick={() => {
             followMutate();
           }}
-          className="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-600 ring-1 ring-indigo-100 transition hover:bg-red-50 hover:text-red-600 hover:ring-red-200 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+          className={`group flex cursor-pointer items-center bg-indigo-50 font-semibold text-indigo-600 transition hover:bg-red-50 ring-1 ring-indigo-100   hover:text-red-600 hover:ring-red-200 focus:outline-none focus:ring-4 focus:ring-indigo-100 ${isBig ? "justify-center gap-2 rounded-xl py-2.5 px-4 text-sm" : "shrink-0 gap-1.5 rounded-full  px-3.5 py-1.5 text-xs"} ${isSuggest && "w-full mt-4"}`}
         >
           {followIsPending ? (
             <>
@@ -88,7 +88,7 @@ export default function Follow({ userId }: { userId: string }) {
           onClick={() => {
             followMutate();
           }}
-          className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+          className={`flex cursor-pointer items-center bg-indigo-600 font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 ${isBig ? "justify-center gap-2 rounded-xl py-2.5 px-4 text-sm" : "shrink-0 gap-1.5 rounded-full  px-3.5 py-1.5 text-xs"} ${isSuggest && "w-full mt-4"}`}
         >
           {followIsPending ? (
             <>

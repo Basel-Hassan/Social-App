@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect, useRef } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
 import ErrorState from "../../Components/Error/ApiError";
 import CreatePost from "../../Components/Post/CreatePost";
@@ -7,21 +8,64 @@ import PostCard from "../../Components/Post/PostCard";
 import PostSkeleton from "../../Components/Post/PostSkeleton";
 import type { PostType } from "../../Types/Post.type";
 export default function Home() {
-  function getAllPosts() {
-    return axios.get(
-      "https://route-posts.routemisr.com/posts?sort=-createdAt",
-      {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  function getAllPosts(page: number) {
+    return axios
+      .get("https://route-posts.routemisr.com/posts", {
+        params: {
+          sort: "-createdAt",
+          page,
+          limit: 40,
+        },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
-      },
-    );
+      })
+      .then((res) => res.data);
   }
 
-  const { data, isError, isLoading, error, refetch } = useQuery({
+  const {
+    data,
+    isError,
+    isLoading,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+  } = useInfiniteQuery({
     queryKey: ["getAllPosts"],
-    queryFn: getAllPosts,
+    queryFn: ({ pageParam }) => getAllPosts(pageParam),
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.pagination.nextPage ?? undefined,
   });
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+
+    if (!sentinel || !hasNextPage || isFetching) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      {
+        rootMargin: "300px",
+      },
+    );
+
+    observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetching]);
 
   if (isLoading) {
     return (
@@ -56,16 +100,26 @@ export default function Home() {
           <CreatePost />
 
           <div className="space-y-6">
-            {data?.data.data.posts.map((post: PostType) => {
-              return (
-                <PostCard
-                  data={post}
-                  isPostDetails={false}
-                  key={post.id}
-                  path={"/"}
-                />
-              );
-            })}
+            {data?.pages
+              .flatMap((page) => page.data.posts)
+              .map((post: PostType) => {
+                return (
+                  <PostCard
+                    data={post}
+                    isPostDetails={false}
+                    key={post.id}
+                    path={"/"}
+                  />
+                );
+              })}
+
+            <div ref={sentinelRef} className="py-4 text-center">
+              {isFetchingNextPage && <PostSkeleton />}
+
+              {!hasNextPage && (
+                <p className="text-sm text-gray-500">No More Posts.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -19,6 +19,7 @@ import Settings from "./Pages/Settings/Settings";
 import ProfileContextProvider from "./Context/ProfileContext";
 import UserProfile from "./Pages/UserProfile/UserProfile";
 import Bookmarks from "./Pages/Bookmarks/Bookmarks";
+import FollowSuggestions from "./Pages/FollowSuggestions/FollowSuggestions";
 
 const query = new QueryClient();
 
@@ -75,6 +76,15 @@ function App() {
             <ProtectedRout>
               {" "}
               <Bookmarks />{" "}
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "suggestions",
+          element: (
+            <ProtectedRout>
+              {" "}
+              <FollowSuggestions />{" "}
             </ProtectedRout>
           ),
         },

@@ -242,7 +242,7 @@ export default function PostCard({
           </p>
         </div>
 
-        {userId !== myId && <Follow userId={userId} />}
+        {userId !== myId && <Follow userId={userId} isBig={false} isSuggest={false}/>}
 
         <PostMenu
           userId={userId}
