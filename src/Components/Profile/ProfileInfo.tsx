@@ -274,8 +274,8 @@ export default function ProfileInfo({
           )}
         </div>
       </div>
-      {isFollowersOpen && <FollowersModal users={followers} closeFn={setIsFollowersOpen} isMyProfile={isMyProfile}/>}
-      {isFollowingOpen && <FollowersModal users={following} closeFn={setIsFollowingOpen} isMyProfile={isMyProfile}/>}
+      {isFollowersOpen && <FollowersModal users={followers} closeFn={setIsFollowersOpen}/>}
+      {isFollowingOpen && <FollowersModal users={following} closeFn={setIsFollowingOpen}/>}
       
     </div>
   );

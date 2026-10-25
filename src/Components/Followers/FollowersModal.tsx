@@ -12,11 +12,9 @@ export interface FollowerUser {
 export default function FollowersModal({
   users,
   closeFn,
-  isMyProfile,
 }: {
   users: string[];
   closeFn: React.Dispatch<React.SetStateAction<boolean>>;
-  isMyProfile: boolean;
 }) {
   return (
     <div
@@ -60,7 +58,7 @@ export default function FollowersModal({
         {users.length > 0 ? (
           <ul className="-mx-2 flex-1 space-y-1 overflow-y-auto px-2">
             {users.map((user) => (
-              <FolloersCard user={user}  isMyProfile={isMyProfile}/>
+              <FolloersCard user={user}/>
             ))}
           </ul>
         ) : (

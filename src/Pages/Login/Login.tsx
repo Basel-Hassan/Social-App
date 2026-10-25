@@ -45,11 +45,11 @@ export default function Login() {
       .post("https://route-posts.routemisr.com/users/signin", data)
       .then((res) => {
         if (res.data.success) {
-          navigat("/");
-          setIsLoading(false);
           localStorage.setItem("userToken", res.data.data.token);
           localStorage.setItem("loginTime", Date.now().toString());
           setUserLogin(res.data.data.token);
+          setIsLoading(false);
+          navigat("/");
         }
       })
       .catch((err) => {
