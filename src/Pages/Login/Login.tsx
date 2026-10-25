@@ -53,7 +53,12 @@ export default function Login() {
         }
       })
       .catch((err) => {
-        setApiError(err.response.data.message);
+        setApiError(
+          axios.isAxiosError(err)
+            ? (err.response?.data?.message ??
+                "Something went wrong. Please try again.")
+            : "Something went wrong. Please try again.",
+        );
         setIsLoading(false);
       });
   }
