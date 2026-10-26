@@ -32,22 +32,18 @@ export default function SuggestionsLoading({
               key={i}
               className="flex flex-col items-center rounded-3xl bg-white p-5 text-center shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100"
             >
-              {/* Avatar */}
               <Skeleton circle width={80} height={80} />
 
-              {/* Name + username */}
               <div className="mt-3 w-full">
                 <Skeleton width="55%" height={16} />
                 <Skeleton width="40%" height={12} />
               </div>
 
-              {/* Stats */}
               <div className="mt-3 flex items-center justify-center gap-3">
                 <Skeleton width={78} height={24} borderRadius={999} />
                 <Skeleton width={70} height={12} />
               </div>
 
-              {/* Follow button */}
               <div className="mt-4 w-full">
                 <Skeleton height={40} borderRadius={12} />
               </div>

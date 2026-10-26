@@ -97,12 +97,10 @@ export default function PostMenu({
           }`}
         >
           <div className="flex items-start gap-3">
-            {/* Icon */}
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-xl text-red-500 ring-4 ring-red-50/60">
               <FiTrash2 />
             </span>
 
-            {/* Text */}
             <div className="min-w-0 flex-1">
               <h3
                 id="delete-title"
@@ -117,7 +115,6 @@ export default function PostMenu({
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="mt-5 flex items-center justify-end gap-2">
             <button
               type="button"

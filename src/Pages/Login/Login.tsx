@@ -71,7 +71,6 @@ export default function Login() {
       </Helmet>
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10 pb-36">
         <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-10">
-          {/* Header */}
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
               <FiLogIn className="text-2xl" />
@@ -83,7 +82,6 @@ export default function Login() {
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit(loginApi)}>
-            {/* Email */}
             <Field
               label="Email"
               htmlFor="email"
@@ -99,7 +97,6 @@ export default function Login() {
               />
             </Field>
 
-            {/* Password */}
             <Field
               label="Password"
               htmlFor="password"
@@ -127,7 +124,6 @@ export default function Login() {
               </button>
             </Field>
 
-            {/* Remember me + Forgot password */}
             <div className="flex items-center justify-between">
               <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
                 <input
@@ -160,7 +156,6 @@ export default function Login() {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}

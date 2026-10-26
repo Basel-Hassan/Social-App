@@ -26,17 +26,14 @@ export default function SuggestionsError({
           </div>
         </div>
 
-        {/* Error card */}
         <div
           role="alert"
           className="rounded-3xl bg-white px-6 py-12 text-center shadow-xl shadow-red-100/60 ring-1 ring-red-100"
         >
-          {/* Icon */}
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-3xl text-red-500 ring-8 ring-red-50/60">
             <FiAlertTriangle />
           </div>
 
-          {/* Text */}
           <h2 className="text-lg font-bold text-slate-900">
             Couldn't load suggestions
           </h2>
@@ -44,14 +41,12 @@ export default function SuggestionsError({
             Something went wrong while getting people for you. Please try again.
           </p>
 
-          {/* API error message */}
           {message && (
             <p className="mx-auto mt-4 max-w-sm break-words rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600">
               {message}
             </p>
           )}
 
-          {/* Retry */}
           <button
             type="button"
             onClick={onRetry}

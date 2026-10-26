@@ -77,10 +77,8 @@ export default function CommentInput({
   }
   return (
     <div className="mt-4 flex items-end gap-3">
-      {/* Avatar (replace with the user's photo later) */}
 
       <div className="min-w-0 flex-1">
-        {/* Image preview */}
         {isUploaded && (
           <div className="relative mb-2 w-fit">
             <img
@@ -105,7 +103,6 @@ export default function CommentInput({
           </div>
         )}
 
-        {/* Input box */}
         <form
           onSubmit={handleSubmit(createComment)}
           className="flex min-w-0 flex-1 items-center gap-1 rounded-full border border-slate-200 bg-white py-1.5 pl-4 pr-1.5 transition focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100"
@@ -118,7 +115,6 @@ export default function CommentInput({
             className="min-w-0 flex-1 bg-transparent p-1.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none rounded-2xl"
           />
 
-          {/* Image picker */}
           <label
             aria-label="Add image"
             className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-lg text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600"
@@ -145,7 +141,6 @@ export default function CommentInput({
             />
           </label>
 
-          {/* Send */}
           <button
             type="submit"
             disabled={isPending}

@@ -127,7 +127,6 @@ export default function NotficationList({
           isRead ? "bg-indigo-50/60" : ""
         }`}
       >
-        {/* Avatar + type icon */}
         <div className="relative shrink-0">
           <img
             src={photo}
@@ -141,7 +140,6 @@ export default function NotficationList({
           </span>
         </div>
 
-        {/* Text */}
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
@@ -158,7 +156,6 @@ export default function NotficationList({
               </p>
             </div>
 
-            {/* Unread dot */}
             {!isRead && (
               <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-600" />
             )}

@@ -59,12 +59,10 @@ export default function Notification({
 
   return (
     <>
-      {/* Panel */}
       <div
         role="menu"
         className="fixed inset-x-4 top-[4.5rem] z-50 rounded-3xl bg-white shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-3 sm:w-96"
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">
@@ -89,7 +87,6 @@ export default function Notification({
           </button>
         </div>
 
-        {/* List */}
         <ul className="max-h-96 space-y-1 overflow-y-auto p-2">
           {isLoading ? (
             <NotificationSkeleton count={unreadNotficationCount} />
@@ -110,7 +107,6 @@ export default function Notification({
           )}
         </ul>
 
-        {/* Footer */}
         <div className="border-t border-slate-100 p-2">
           <button
             type="button"

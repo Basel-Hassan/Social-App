@@ -299,7 +299,6 @@ export default function PostCard({
             </div>
           </div>
 
-          {/* محتوى البوست الأصلي */}
           {sharedPost.body && (
             <Link to={`/postdetails/${sharedPost._id}`}>
               <p
@@ -311,7 +310,6 @@ export default function PostCard({
             </Link>
           )}
 
-          {/* صورة البوست الأصلي */}
           {sharedPost.image && (
             <Link to={`/postdetails/${sharedPost._id}`}>
               <img
@@ -461,15 +459,12 @@ export default function PostCard({
 
       {isShareOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Overlay */}
           <div
             className="absolute inset-0 bg-slate-900/10 backdrop-blur-sm"
             onClick={() => setIsShareOpen(false)}
           />
 
-          {/* Modal box */}
           <div className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl shadow-indigo-200/50 ring-1 ring-slate-100">
-            {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <h3 className="text-base font-bold text-slate-900">Share post</h3>
               <button
@@ -481,9 +476,7 @@ export default function PostCard({
               </button>
             </div>
 
-            {/* Body */}
             <div className="p-5">
-              {/* Textarea */}
               <textarea
                 placeholder="Write something about this post..."
                 rows={3}
@@ -491,7 +484,6 @@ export default function PostCard({
                 className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100"
               />
 
-              {/* Preview of the post being shared */}
               <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70">
                 <div className="flex items-center gap-3 p-3">
                   <img
@@ -528,7 +520,6 @@ export default function PostCard({
               </div>
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-end gap-2 border-t border-slate-100 px-5 py-4">
               <button
                 type="button"

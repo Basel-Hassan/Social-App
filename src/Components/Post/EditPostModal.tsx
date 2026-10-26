@@ -81,7 +81,6 @@ export default function EditPostModal({
       className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-slate-900/50 px-4 py-6 backdrop-blur-sm"
     >
       <div className="w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl shadow-slate-900/20 ring-1 ring-slate-100 sm:p-6">
-        {/* Header */}
         <div className="mb-5 flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-xl text-white shadow-lg shadow-indigo-200">
             <FiEdit2 />
@@ -111,7 +110,6 @@ export default function EditPostModal({
           </button>
         </div>
 
-        {/* Text */}
         <textarea
           name="body"
           dir="auto"
@@ -143,9 +141,7 @@ export default function EditPostModal({
           </div>
         )}
 
-        {/* Actions */}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-          {/* Image picker */}
           <label
             aria-label="Change image"
             className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"

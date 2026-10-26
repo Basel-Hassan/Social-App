@@ -24,7 +24,6 @@ export default function FollowersModal({
       className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-slate-900/50 px-4 py-6 backdrop-blur-sm"
     >
       <div className="flex max-h-[85vh] w-full max-w-md flex-col rounded-3xl bg-white p-5 shadow-2xl shadow-slate-900/20 ring-1 ring-slate-100 sm:p-6">
-        {/* Header */}
         <div className="mb-4 flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-xl text-white shadow-lg shadow-indigo-200">
             <FiUsers />
@@ -54,7 +53,6 @@ export default function FollowersModal({
           </button>
         </div>
 
-        {/* List */}
         {users.length > 0 ? (
           <ul className="-mx-2 flex-1 space-y-1 overflow-y-auto px-2">
             {users.map((user) => (

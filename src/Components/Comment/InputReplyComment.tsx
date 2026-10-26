@@ -96,7 +96,6 @@ export default function InputReplyComment({
           className="min-w-0 flex-1 bg-transparent p-1.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none"
         />
 
-        {/* Image picker */}
         <label className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-base text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600">
           <FiImage />
           <input
@@ -115,7 +114,6 @@ export default function InputReplyComment({
           />
         </label>
 
-        {/* Send */}
         <button
           type="button"
           disabled={isPending}

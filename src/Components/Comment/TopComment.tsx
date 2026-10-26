@@ -141,7 +141,6 @@ export default function TopComment({
           <div className="mt-1.5 flex items-center gap-3 px-2">
             {isPostDetails ? (
               <>
-                {/* Like */}
                 <button
                   type="button"
                   disabled={isPending}
@@ -170,7 +169,6 @@ export default function TopComment({
                   <span className="text-slate-400">{likes.length}</span>
                 </button>
 
-                {/* Reply */}
                 <button
                   type="button"
                   onClick={() => {
@@ -186,7 +184,6 @@ export default function TopComment({
               ""
             )}
 
-            {/* التاريخ */}
             <span className="text-xs text-slate-400">
               {new Date(createdAt).toLocaleDateString()}
             </span>

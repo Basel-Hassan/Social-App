@@ -55,16 +55,13 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur">
       <nav className="mx-auto flex h-16 items-center justify-between gap-2 px-3 sm:px-4 lg:px-6">
-        {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center">
-          {/* Mobile + Tablet Logo */}
           <img
             src={smallLogo}
             alt="Elvora"
             className="h-16 w-16 object-contain lg:hidden"
           />
 
-          {/* Desktop Logo */}
           <img
             src={logo}
             alt="Elvora"
@@ -72,7 +69,6 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Links */}
         <ul className="flex shrink-0 items-center gap-0.5 sm:gap-1 lg:gap-2">
           {links.map(({ to, label, icon: Icon }) => (
             <li key={to}>
@@ -124,13 +120,11 @@ export default function Navbar() {
                   />
                 )}
               </li>
-              {/* Divider */}
               <li
                 aria-hidden="true"
                 className="mx-1 h-6 w-px bg-slate-200 sm:mx-2"
               />
 
-              {/* Logout */}
               <li>
                 <button
                   type="button"

@@ -59,7 +59,6 @@ export default function SinglePost() {
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pt-10 pb-12">
         <div className="mx-auto w-full max-w-xl">
           <div className="space-y-6 mb-24">
-            {/* Post */}
             <PostCard
               data={data?.data.data.post}
               isPostDetails={true}

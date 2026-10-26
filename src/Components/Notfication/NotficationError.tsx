@@ -17,12 +17,10 @@ export default function NotficationError({
     <div
       className={`flex flex-col items-center justify-center gap-4 rounded-2xl px-6 py-10 text-center ${className}`}
     >
-      {/* Icon */}
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 ring-1 ring-rose-100">
         <FiAlertCircle className="h-7 w-7 text-rose-500" />
       </div>
 
-      {/* Text */}
       <div className="space-y-1.5">
         <h4 className="text-sm font-bold text-slate-900">{title}</h4>
         <p className="max-w-[240px] text-xs leading-relaxed text-slate-500">
@@ -30,7 +28,6 @@ export default function NotficationError({
         </p>
       </div>
 
-      {/* Retry button */}
       {onRetry && (
         <button
           type="button"

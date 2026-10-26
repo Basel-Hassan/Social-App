@@ -29,7 +29,6 @@ export default function LikesModal({
       className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-slate-900/50 px-4 py-6 backdrop-blur-sm"
     >
       <div className="flex max-h-[85vh] w-full max-w-md flex-col rounded-3xl bg-white p-5 shadow-2xl shadow-slate-900/20 ring-1 ring-slate-100 sm:p-6">
-        {/* Header */}
         <div className="mb-4 flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500 text-xl text-white shadow-lg shadow-rose-200">
             <FiHeart className="fill-current" />
@@ -58,7 +57,6 @@ export default function LikesModal({
 
         {likesIsLoading && (
           <>
-            {/* Loading State */}
             <div className="flex flex-1 flex-col items-center justify-center py-14">
               <div className="relative mb-5">
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-2xl text-rose-400">
@@ -74,7 +72,6 @@ export default function LikesModal({
               </p>
               <p className="mt-1 text-xs text-slate-400">Just a moment</p>
 
-              {/* Skeleton list preview */}
               <div className="mt-8 w-full space-y-3 px-2">
                 {[1, 2, 3].map((i) => (
                   <div
@@ -96,7 +93,6 @@ export default function LikesModal({
 
         {likesIsError && (
           <>
-            {/* Error State */}
             <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
               <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-2xl text-rose-400 shadow-inner">
                 <FiHeart />

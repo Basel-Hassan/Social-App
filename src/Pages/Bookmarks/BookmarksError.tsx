@@ -17,12 +17,10 @@ export default function BookmarksError({
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-10 pt-3">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center pt-16 sm:pt-24">
         <div className="w-full rounded-3xl bg-white p-8 text-center shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-10">
-          {/* Icon */}
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 ring-1 ring-rose-100">
             <FiAlertTriangle className="h-8 w-8 text-rose-500" />
           </div>
 
-          {/* Text */}
           <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
             {title}
           </h2>
@@ -30,7 +28,6 @@ export default function BookmarksError({
             {message}
           </p>
 
-          {/* Actions */}
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             {onRetry && (
               <button

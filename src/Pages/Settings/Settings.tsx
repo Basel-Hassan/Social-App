@@ -69,7 +69,6 @@ export default function Settings() {
       </Helmet>
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10 pb-36">
         <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-10">
-          {/* Header */}
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
               <FiSettings className="text-2xl" />
@@ -81,7 +80,6 @@ export default function Settings() {
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit(handleChangePass)}>
-            {/* Current password */}
             <Field
               label="Current password"
               htmlFor="password"
@@ -109,7 +107,6 @@ export default function Settings() {
               </button>
             </Field>
 
-            {/* New password */}
             <Field
               label="New password"
               htmlFor="newPassword"
@@ -155,13 +152,11 @@ export default function Settings() {
               </div>
             )}
 
-            {/* Hint */}
             <p className="rounded-xl bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-500 ring-1 ring-slate-100">
               Use at least 8 characters with an uppercase letter, a lowercase
               letter, a number, and a special character.
             </p>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isPending}

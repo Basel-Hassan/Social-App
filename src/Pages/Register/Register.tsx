@@ -74,7 +74,6 @@ export default function Register() {
       </Helmet>
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pb-36 py-10">
         <div className="w-full max-w-xl rounded-3xl bg-white p-8 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-10">
-          {/* Header */}
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
               <FiUser className="text-2xl" />
@@ -88,7 +87,6 @@ export default function Register() {
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit(registerApi)}>
-            {/* Name */}
             <Field
               label="Full name"
               htmlFor="name"
@@ -104,7 +102,6 @@ export default function Register() {
               />
             </Field>
 
-            {/* Username + Email */}
             <div className="grid gap-5 sm:grid-cols-2">
               <Field
                 label="Username"
@@ -137,7 +134,6 @@ export default function Register() {
               </Field>
             </div>
 
-            {/* Date of birth + Gender */}
             <div className="grid gap-5 sm:grid-cols-2">
               <Field
                 label="Date of birth"
@@ -174,7 +170,6 @@ export default function Register() {
               </Field>
             </div>
 
-            {/* Password */}
             <Field
               label="Password"
               htmlFor="password"
@@ -202,7 +197,6 @@ export default function Register() {
               </button>
             </Field>
 
-            {/* Confirm password */}
             <Field
               label="Confirm password"
               htmlFor="rePassword"
@@ -246,7 +240,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}

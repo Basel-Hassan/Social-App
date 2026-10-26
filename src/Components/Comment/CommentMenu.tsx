@@ -232,7 +232,6 @@ export default function CommentMenu({
         )}
       </div>
 
-      {/* Edit comment - UI only */}
       {isEditOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <button
@@ -320,7 +319,6 @@ export default function CommentMenu({
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
-              {/* Image picker */}
               <label
                 aria-label="Change image"
                 className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
@@ -371,7 +369,6 @@ export default function CommentMenu({
         </div>
       )}
 
-      {/* Delete confirmation - UI only */}
       {isDeleteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <button

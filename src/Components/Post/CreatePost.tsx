@@ -58,7 +58,6 @@ export default function CreatePost() {
   }
   return (
     <div className="w-full max-w-2xl mb-7 rounded-3xl bg-white p-5 shadow-xl shadow-indigo-100/60 ring-1 ring-slate-100 sm:p-6">
-      {/* Header + text */}
       <div className="flex items-start gap-3">
         <textarea
           name="body"
@@ -92,9 +91,7 @@ export default function CreatePost() {
         </div>
       )}
 
-      {/* Actions */}
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-        {/* Image picker */}
         <label
           aria-label="Add image"
           className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
@@ -111,7 +108,6 @@ export default function CreatePost() {
           />
         </label>
 
-        {/* Submit */}
         <button
           type="button"
           disabled={isPending}

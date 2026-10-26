@@ -8,13 +8,13 @@ export interface PostUserType {
 export interface PostType {
   _id: string;
   id: string;
-  body?: string;   // missing on posts that only have an image or are shares
-  image?: string;  // missing on text-only posts
-  privacy: string; // e.g. "public"
+  body?: string;   
+  image?: string;  
+  privacy: string; 
   user: PostUserType;
   sharedPost: SharedPost | null;
-  likes: string[]; // ids of users who liked the post
-  createdAt: string; // ISO date
+  likes: string[];
+  createdAt: string; 
   commentsCount: number;
   topComment: PostComment | null;
   sharesCount: number;
