@@ -14,6 +14,8 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../Context/LoginContext";
 import Notification from "../Notfication/Notfication";
+import logo from "../../assets/logo2.png";
+import smallLogo from "../../assets/smallLogo2.png";
 
 export default function Navbar() {
   const { userLogin, setUserLogin } = useContext(LoginContext);
@@ -24,7 +26,7 @@ export default function Navbar() {
     ? [
         { to: "/", label: "Home", icon: FiHome },
         { to: "/profile", label: "Profile", icon: FiUser },
-        { to: "/suggestions",label: "Suggestions", icon: FaUserPlus   },
+        { to: "/suggestions", label: "Suggestions", icon: FaUserPlus },
         { to: "/settings", icon: FiSettings },
       ]
     : [
@@ -52,19 +54,26 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur">
-      <nav className="mx-auto flex h-16  items-center justify-between px-4 sm:px-6">
+      <nav className="mx-auto flex h-16 items-center justify-between gap-2 px-3 sm:px-4 lg:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
-            <FiHome className="text-xl" />
-          </span>
-          <span className="hidden text-lg font-bold text-slate-900 sm:block">
-            MyApp
-          </span>
+        <Link to="/" className="flex shrink-0 items-center">
+          {/* Mobile + Tablet Logo */}
+          <img
+            src={smallLogo}
+            alt="Elvora"
+            className="h-16 w-16 object-contain lg:hidden"
+          />
+
+          {/* Desktop Logo */}
+          <img
+            src={logo}
+            alt="Elvora"
+            className="hidden w-48 object-contain object-left lg:block"
+          />
         </Link>
 
         {/* Links */}
-        <ul className="flex items-center gap-1 sm:gap-2">
+        <ul className="flex shrink-0 items-center gap-0.5 sm:gap-1 lg:gap-2">
           {links.map(({ to, label, icon: Icon }) => (
             <li key={to}>
               <NavLink
@@ -80,7 +89,7 @@ export default function Navbar() {
                 }
               >
                 <Icon className="text-lg" />
-                {label && <span className="hidden sm:inline">{label}</span>}
+                {label && <span className="hidden lg:inline">{label}</span>}
               </NavLink>
             </li>
           ))}

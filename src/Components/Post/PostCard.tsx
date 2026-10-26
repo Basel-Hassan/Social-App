@@ -98,6 +98,7 @@ export default function PostCard({
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["getLikes", _id] });
       query.invalidateQueries({ queryKey: ["userPostsApi" , id] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
       query.invalidateQueries({ queryKey: ["getBookMarks"] });
     },
   });
@@ -144,6 +145,7 @@ export default function PostCard({
       setIsShareOpen(false);
       query.invalidateQueries({ queryKey: ["getAllPosts"] });
       query.invalidateQueries({ queryKey: ["myProfileApi"] });
+      query.invalidateQueries({ queryKey: ["userPostsApi"] });
     },
     onError: (err: AxiosError<{ message?: string }>) => {
       toast.error(
@@ -359,18 +361,18 @@ export default function PostCard({
         >
           {isPending ? (
             <>
-              <ImSpinner className="animate-spin" />
-              Loading...
+              <ImSpinner className="animate-spin text-lg" />
+              <span className="hidden sm:inline">Loading...</span>
             </>
           ) : isLike ? (
             <>
               {" "}
-              <FaHeart className="scale-110 fill-current text-lg" /> Liked
+              <FaHeart className="scale-110 fill-current text-lg" /> <span className="hidden sm:inline">Liked</span>
             </>
           ) : (
             <>
               {" "}
-              <FiHeart className="text-lg" /> Like
+              <FiHeart className="text-lg" /> <span className="hidden sm:inline">Like</span>
             </>
           )}
         </button>
@@ -380,7 +382,7 @@ export default function PostCard({
           className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
         >
           <FiMessageCircle className="text-lg" />
-          Comment
+          <span className="hidden sm:inline">Comment</span>
         </Link>
 
         <button
@@ -391,7 +393,7 @@ export default function PostCard({
           className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
         >
           <FiShare2 className="text-lg" />
-          Share
+          <span className="hidden sm:inline">Share</span>
         </button>
 
         <button
@@ -406,18 +408,18 @@ export default function PostCard({
         >
           {bookmarkIsPending ? (
             <>
-              <ImSpinner className="animate-spin" />
-              Loading...
+              <ImSpinner className="animate-spin text-lg" />
+              <span className="hidden sm:inline">Loading...</span>
             </>
           ) : isBookmarked ? (
             <>
               <FaBookmark className="scale-110 fill-current text-lg" />
-              Saved
+              <span className="hidden sm:inline">Saved</span>
             </>
           ) : (
             <>
               <FiBookmark className="text-lg" />
-              Save
+              <span className="hidden sm:inline">Save</span>
             </>
           )}
         </button>

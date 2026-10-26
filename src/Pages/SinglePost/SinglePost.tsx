@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import ErrorState from "../../Components/Error/ApiError";
 import PostCard from "../../Components/Post/PostCard";
 import PostSkeleton from "../../Components/Post/PostSkeleton";
+import { Helmet } from "react-helmet";
 
 export default function SinglePost() {
   const { id } = useParams();
@@ -23,35 +24,50 @@ export default function SinglePost() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
-        <div className="mx-auto w-full max-w-2xl">
-          <PostSkeleton />
+      <>
+        <Helmet>
+          <title>Elvora | PostDetails</title>
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
+          <div className="mx-auto w-full max-w-2xl">
+            <PostSkeleton />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
   if (isError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
-        <div className="mx-auto w-full max-w-2xl">
-          <ErrorState message={error.message} refetch={refetch} />
+      <>
+        <Helmet>
+          <title>Elvora | PostDetails</title>
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
+          <div className="mx-auto w-full max-w-2xl">
+            <ErrorState message={error.message} refetch={refetch} />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-10">
-      <div className="mx-auto w-full max-w-xl">
-        <div className="space-y-6">
-          {/* Post */}
-          <PostCard
-            data={data?.data.data.post}
-            isPostDetails={true}
-            path={"/profile"}
-          />
+    <>
+      <Helmet>
+        <title>Elvora | PostDetails</title>
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 pt-10 pb-12">
+        <div className="mx-auto w-full max-w-xl">
+          <div className="space-y-6 mb-24">
+            {/* Post */}
+            <PostCard
+              data={data?.data.data.post}
+              isPostDetails={true}
+              path={"/profile"}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
